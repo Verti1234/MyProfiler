@@ -55,7 +55,7 @@ useEffect(() => {
     }
   }
   fetchData();
-}, []);
+}, [supabase]);
 
 console.log(user);
 

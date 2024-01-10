@@ -18,7 +18,7 @@ import DataPersonalTab from '@/components/AccountPage/DataPersonalTab';
 
 
 export default async function Page() {
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const supabase = await createServerComponentClient<Database>({ cookies });
   const {
     data: { session },
   } = await supabase.auth.getSession();

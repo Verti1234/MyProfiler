@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 export default async function Home() {
 
   //test
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const supabase = await createServerComponentClient<Database>({ cookies });
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -16,7 +16,7 @@ export default async function Home() {
   return (
     <main className="w-full h-screen flex">
       <div className="w-4/6 h-full flex justify-center ">
-        <Image src={"/hero.svg"} alt={"xD"} width={500} height={500} />
+        <Image src={"/hero.svg"} alt={"HeroImg"} width={500} height={500} />
       </div>
       <div className="w-2/6 h-full   p-4 py-6">
         

@@ -56,14 +56,14 @@ export function ChangePassForm() {
     setDefaultEmail(session?.user.email || "");
   }
   getEmail()
-  }, [])
+  }, [supabase.auth])
 
   useEffect(() => {
     form.reset({
       ...form.getValues(),
       email: defaultEmail,
     });
-  }, [defaultEmail]);
+  }, [defaultEmail,form]);
   const handleChange = async (password: string, email:string) => {
     const { data, error } = await supabase.auth.updateUser({
       email: email,
