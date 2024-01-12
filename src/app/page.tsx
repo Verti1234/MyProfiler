@@ -1,17 +1,7 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { LoginForm } from '../components/LoginPage/LoginForm'
 import Image from "next/image";
-import { Database } from '@/lib/database.types';
-import { cookies } from "next/headers";
 
 export default async function Home() {
-
-  //test
-  const supabase = await createServerComponentClient<Database>({ cookies });
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  console.log(session);
 
   return (
     <main className="w-full h-screen flex">

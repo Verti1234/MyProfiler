@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { ChangePassForm } from './ChangePassForm'
+import { ChangePassForm } from './ChangeLoginDataForm'
 
 export default function DataLoginTab() {
   return (

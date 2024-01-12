@@ -17,92 +17,44 @@ import { Input } from "@/components/ui/input"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Database } from "@/lib/database.types"
 import { toast } from "sonner"
-import { useEffect, useState } from "react"
+import { LoginDataValidator } from "@/lib/validators/LoginData"
 
-const formSchema = z.object({
-  email: z.string().email({
-    message: "Niepoprawny adres email",
-  }),
-  password: z.string().min(8, {
-    message: "Hasło musi być dłuższe niż 8 znaków",
-  }),
-  confirmPassword: z.string(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Hasła nie są takie same",
-  path: ['confirmPassword'],
-})
+
 
 export function ChangePassForm() {
   const supabase = createClientComponentClient<Database>()
-  const [defaultEmail, setDefaultEmail] = useState("")
-  
-  // console.log(defaultEmail);
-  
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof LoginDataValidator>>({
+    resolver: zodResolver(LoginDataValidator),
     defaultValues: {
-      email: defaultEmail,
+      email: "",
       password: "", 
       confirmPassword: "",
     },
   })
 
-  useEffect(() => {
-  const getEmail = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    setDefaultEmail(session?.user.email || "");
-  }
-  getEmail()
-  }, [supabase.auth])
-
-  useEffect(() => {
-    form.reset({
-      ...form.getValues(),
-      email: defaultEmail,
-    });
-  }, [defaultEmail,form]);
   const handleChange = async (password: string, email:string) => {
     const { data, error } = await supabase.auth.updateUser({
       email: email,
       password: password
-    })
-    console.log(data);
-    
+    })    
     if (error) {
-      console.log(error);
-      
-      toast("Operacja nieudana", {
-          description: "Wystąpił błąd podczas aktualizacji danych logowania",
-          action: {
-            label: "X",
-            onClick: () => console.log("Test"),
-          }
-        },
-        )
-    } else {
-      toast("Operacja udana", {
-          description: "Pomyślnie zaktualizowano dane logowania",
-          action: {
-            label: "X",
-            onClick: () => console.log("Test"),
-          }
-        },
-        )
-      }
+      toast.error("Coś poszło nie tak", {
+          description: "Spróbuj ponownie później",
+      })}
+    else {
+      toast.success("Dane zostały pomyślnie zaktualizowane")
+    }
   }
 
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof LoginDataValidator>) {
     handleChange(values.password, values.email)
-    console.log(values)
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ">
         <FormField
           control={form.control}
           name="email"
@@ -110,10 +62,9 @@ export function ChangePassForm() {
             <FormItem>
               <FormLabel>Zmień adres E-mail</FormLabel>
               <FormControl>
-                <Input placeholder={`${defaultEmail}`} {...field} />
+                <Input placeholder="example@gmail.com" {...field} />
               </FormControl>
               <FormDescription>
-                
               </FormDescription>
               <FormMessage />
             </FormItem>

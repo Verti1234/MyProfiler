@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'MyProfiler',
-  description: 'Aplikacja do zarządzania swoimi danymi osobowymi',
+  description: 'Aplikacja do zarządzania  profilem',
 }
 
 export default function RootLayout({

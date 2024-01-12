@@ -1,7 +1,6 @@
 
 import TopBar from '@/components/AccountPage/TopBar'
 import React from 'react'
-
 import {
   Tabs,
   TabsContent,
@@ -18,13 +17,12 @@ import DataPersonalTab from '@/components/AccountPage/DataPersonalTab';
 
 
 export default async function Page() {
+
   const supabase = await createServerComponentClient<Database>({ cookies });
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  //test
-  console.log(session);
-  //endtest
+
   if (!session) {
     redirect("/");
   }

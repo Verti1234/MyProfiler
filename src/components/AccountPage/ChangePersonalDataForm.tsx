@@ -15,43 +15,52 @@ import {
 import { Input } from "../ui/input"
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from "@/lib/database.types"
+import { toast } from "sonner"
+import { PersonalDataValidator } from "@/lib/validators/PersonalData"
 
 
-const formSchema = z.object({
-  imie: z.string().min(1, {
-    message: "Imie musi być dłuższe niż jeden znak",
-  }),
-  nazwisko: z.string().min(2, {
-    message: "Nazwisko musi być dłuższe niż jeden znak",
-  }),
-  img: z.string().url({
-    message: "Niepoprawny adres url",
-  }),
-})
-  
+
 
 
 export function ChangePersonalForm() {
 
   const supabase = createClientComponentClient<Database>()
   
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof PersonalDataValidator>>({
+    resolver: zodResolver(PersonalDataValidator),
     defaultValues: {
       imie: "",
       nazwisko: ""
     },
   })
 
+  const handleUpdate = async (imie:string,nazwisko: string) => {
+        const {data: { session } } = await supabase.auth.getSession(); 
+      const { data, error } = await supabase
+      .from('Users')
+      .update({ firstname: imie, surname: nazwisko })
+      .eq('id', session?.user.id)
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    //to do
+      
+      if(error){
+        toast.error("Coś poszło nie tak", {
+          description: "Spróbuj ponownie później",
+      })
+      }else{
+        const { error } = await supabase.auth.refreshSession()
+        toast.success("Dane zostały pomyślnie zaktualizowane")
+      }
     
+  }
+
+  async function onSubmit(values: z.infer<typeof PersonalDataValidator>) {
+    
+    handleUpdate(values.imie,values.nazwisko)
   }
   
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-3/4 ">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 ">
         <FormField
           control={form.control}
           name="imie"
@@ -61,7 +70,6 @@ export function ChangePersonalForm() {
               <FormControl>
                 <Input placeholder="Krzysiek" className="text-black" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -75,21 +83,6 @@ export function ChangePersonalForm() {
               <FormControl>
                 <Input placeholder="Godyń"  className="text-black" {...field} />
               </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="img"
-          render={({ field }) => (
-            <FormItem className="h-24">
-              <FormLabel>Adres URL zdjęcia</FormLabel>
-              <FormControl>
-                <Input placeholder="https://github.com/verti1234.png"  className="text-black" {...field} />
-              </FormControl>
-
               <FormMessage />
             </FormItem>
           )}

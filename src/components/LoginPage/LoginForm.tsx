@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { Button } from "../ui/button"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -11,33 +11,29 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form"
-import { Input } from "../ui/input"
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from "@/lib/database.types"
 import { toast } from "sonner"
+import { SignInValidator } from "@/lib/validators/SignIn"
 
 
-const formSchema = z.object({
-  login: z.string().min(2, {
-    message: "Login musi być dłuższy niż 2 znaki",
-  }),
-  password: z.string()
-// popraw na sonner czy cos
-})
 
 export function LoginForm() {
+
   const supabase = createClientComponentClient<Database>()
   const router = useRouter()
-  
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+
+  const form = useForm<z.infer<typeof SignInValidator>>({
+    resolver: zodResolver(SignInValidator),
     defaultValues: {
       login: "",
       password: ""
     },
   })
+
   const handleSignIn = async (login:string,password: string) => {
       await supabase.auth.signInWithPassword({
         email:login,
@@ -49,24 +45,17 @@ export function LoginForm() {
   } = await supabase.auth.getSession();
   
   if(session){
-    console.log(session);
+    // console.log(session);
     router.push('/account')
   }else{
-    console.log('nie zalogowano');
-    toast("Nie udało się zalogować", {
+    toast.error("Nie udało się zalogować", {
           description: "Błędne dane logowania",
-          action: {
-            label: "X",
-            onClick: () => console.log("Test"),
-          }
         },
         )
   }
 }
-  // email: "krzysztofgodyn501@gmail.com",
-  // password: "jelly22fish",
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof SignInValidator>) {
     handleSignIn(values.login,values.password)
   }
   
@@ -102,7 +91,9 @@ export function LoginForm() {
           )}
         />
         <div className="w-full flex justify-center">
-          <Button type="submit">Zaloguj się</Button>
+          <Button type="submit" >
+            Zaloguj się
+            </Button>
         </div>
         
       </form>
