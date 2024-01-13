@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prismaDev": "dotenv -e .env.local prisma migrate dev "
+    "prismaDev": "dotenv -e .env.local prisma migrate dev ",
+    "postinstall": "prisma generate"
+
   },
   "dependencies": {
     "@auth/prisma-adapter": "^1.0.14",
