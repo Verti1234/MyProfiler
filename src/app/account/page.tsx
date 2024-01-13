@@ -1,45 +1,35 @@
 
 import TopBar from '@/components/AccountPage/TopBar'
-import React from 'react'
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { Database } from '@/lib/database.types';
 import DataLoginTab from '@/components/AccountPage/DataLoginTab';
 import DataPersonalTab from '@/components/AccountPage/DataPersonalTab';
+import ImageTab from '@/components/AccountPage/ImageTab';
 
-
-
-export default async function Page() {
-
-  const supabase = await createServerComponentClient<Database>({ cookies });
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session) {
-    redirect("/");
-  }
+export default  function Page() {
+  
   return (
     <div className='w-full h-screen'>
       <TopBar /> 
       <div className='w-full  h-[calc(100%-6rem)] flex justify-center items-center'>
         <Tabs defaultValue="account" className="w-3/6 h-5/6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="account">Dane logowania</TabsTrigger>
             <TabsTrigger value="password"> Dane osobowe</TabsTrigger>
+            <TabsTrigger value="image">Zdjecie profilowe</TabsTrigger>
           </TabsList>
           <TabsContent value="account" className="h-5/6">
             <DataLoginTab />
           </TabsContent>
           <TabsContent value="password" className="h-5/6">
             <DataPersonalTab />
+          </TabsContent>
+          <TabsContent value="image" className="h-5/6">
+            <ImageTab />
           </TabsContent>
         </Tabs>
       </div>

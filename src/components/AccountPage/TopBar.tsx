@@ -18,50 +18,47 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserRound } from 'lucide-react';
 import Link from 'next/link';
-import { Suspense, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useCallback, useEffect, useState } from 'react';
+import { useSession,signOut } from "next-auth/react";
+import UserInfo from "./UserInfo";
 
-type User = {
-  id: string;
-  firstname: string;
-  surname: string;
-  image: string;
-}
-type Session = {
-  user: {
-    email: string;
-  }
+
+
+type user = {
+  firstName: string,
+  SurName: string,
+  email: string,
+  image: string
 }
 
-export default  function TopBar() {
-  
-  const supabase = createClientComponentClient()
-  const router = useRouter()
-  const [user, setUser] = useState<User | null>({id: '', firstname: '', surname: '', image: ''});
-  const [session, setSession] = useState<Session | null>(null);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.refresh()
-  }
+export default function TopBar() {
+  const { data: session } = useSession();
   
-  
-useEffect(() => {
-  const fetchData = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+  const [user, setUser] = useState<user>();
 
-    let { data: Users} = await supabase
-      .from('Users')
-      .select('*')
-      .eq('id', session?.user.id)
-    if (Users && Users.length > 0) {
-      setUser(Users[0]);
+  const fetchData = useCallback(async () => {
+    const body = {
+      session: session
     }
-    setSession(session as Session);
-  }
-  fetchData();
-}, [supabase,session]);
+    const res = await fetch('/api/getuser', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
+    const account = await res.json();
+    setUser(account)
+
+  }, [session]);
+  
+  useEffect(() => {
+    fetchData()
+  },[session,fetchData])
+
+  
+
 
   return (
     <div className='w-full h-24 flex justify-center    '>
@@ -70,13 +67,13 @@ useEffect(() => {
         <Dialog>
         <DropdownMenu>
           <DropdownMenuTrigger>
-              <div className='flex justify-center items-center gap-3 hover:bg-neutral-200 rounded-lg px-2 py-1 transition-all cursor-pointer'>
-                  <span className='text-lg'>{user?.firstname+" "+user?.surname }</span>
-                  <Avatar>
-                    <AvatarImage src={`${user?.image}`} />
-                    <AvatarFallback>E4</AvatarFallback>
-                  </Avatar>
-              </div>
+            <div className='flex justify-center items-center gap-3 hover:bg-neutral-200 rounded-lg px-2 py-1 transition-all cursor-pointer'>
+              <span className='text-lg'>{user?.firstName} {user?.SurName}</span>
+              <Avatar>
+                <AvatarImage src={`${user?.image}`} />
+                <AvatarFallback>E4</AvatarFallback>
+              </Avatar>
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>Akcje</DropdownMenuLabel>
@@ -87,7 +84,7 @@ useEffect(() => {
             </DropdownMenuItem>
             </DialogTrigger>
             <DropdownMenuItem className=" text-red-500 hover:text-red-700 cursor-pointer">
-              <Link href={'/'} onClick={handleSignOut}>
+              <Link href={'/'} onClick={() => signOut()}>
                 Wyloguj się
               </Link>
             </DropdownMenuItem>
@@ -97,23 +94,8 @@ useEffect(() => {
         <DialogContent >
           <DialogHeader>
             <DialogTitle className="pb-4">Aktualne dane</DialogTitle>
-            <DialogDescription className='flex justify-between text-black '>
-              <div className="flex flex-col w-1/2">
-                <span className="font-semibold text-base">Imię: </span>
-                {user?.firstname}
-                <span className="font-semibold text-base">Nazwisko: </span>
-                {user?.surname}
-                <span className="font-semibold text-base">Email: </span>
-                {session?.user.email}
-              </div>
-              <div className="flex justify-center w-1/2">
-                <Suspense fallback={<p>Loading...</p>}>
-                  <Avatar className="w-24 h-24 hover:cursor-pointer hover:opacity-75 transition-all ">
-                    <AvatarImage src={`${user?.image}`} />
-                    <AvatarFallback>E4</AvatarFallback>
-                  </Avatar>
-                </Suspense>
-              </div>
+            <DialogDescription>
+              <UserInfo user={user} />
             </DialogDescription>
           </DialogHeader>
         </DialogContent>

@@ -1,6 +1,8 @@
-import React from 'react'
+
 import { Card, CardContent,CardHeader, CardTitle } from '../ui/card'
-import { ChangePersonalForm }from './ChangePersonalDataForm'
+import { ChangePersonalForm } from './ChangePersonalDataForm'
+
+
 
 export default function DataPersonalTab() {
   return (

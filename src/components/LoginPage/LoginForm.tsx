@@ -14,49 +14,37 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Database } from "@/lib/database.types"
 import { toast } from "sonner"
 import { SignInValidator } from "@/lib/validators/SignIn"
-
+import { signIn } from "next-auth/react"
 
 
 export function LoginForm() {
 
-  const supabase = createClientComponentClient<Database>()
   const router = useRouter()
 
   const form = useForm<z.infer<typeof SignInValidator>>({
     resolver: zodResolver(SignInValidator),
     defaultValues: {
-      login: "",
+      email: "",
       password: ""
     },
   })
 
-  const handleSignIn = async (login:string,password: string) => {
-      await supabase.auth.signInWithPassword({
-        email:login,
-        password:password,
-        
-  })
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  
-  if(session){
-    // console.log(session);
-    router.push('/account')
-  }else{
-    toast.error("Nie udało się zalogować", {
-          description: "Błędne dane logowania",
-        },
-        )
-  }
-}
+
 
   async function onSubmit(values: z.infer<typeof SignInValidator>) {
-    handleSignIn(values.login,values.password)
+    const res = await signIn("credentials", {
+      email: values.email,
+      password: values.password,
+      // callbackUrl: "/profile",
+      redirect: false,
+    })
+    if (res?.error) {
+      toast.error("Niepoprawne dane logowania")
+    } else {
+      router.push("/account")
+    }
   }
   
   return (
@@ -64,7 +52,7 @@ export function LoginForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 w-3/4 ">
         <FormField
           control={form.control}
-          name="login"
+          name="email"
           render={({ field }) => (
             <FormItem className="h-24">
               <FormLabel>Login</FormLabel>

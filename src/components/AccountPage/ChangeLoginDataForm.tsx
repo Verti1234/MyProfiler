@@ -14,16 +14,14 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { Database } from "@/lib/database.types"
 import { toast } from "sonner"
 import { LoginDataValidator } from "@/lib/validators/LoginData"
-
-
+import { useSession } from "next-auth/react"
 
 export function ChangePassForm() {
-  const supabase = createClientComponentClient<Database>()
 
+  const { data: session,update } = useSession();
+  
   const form = useForm<z.infer<typeof LoginDataValidator>>({
     resolver: zodResolver(LoginDataValidator),
     defaultValues: {
@@ -33,24 +31,38 @@ export function ChangePassForm() {
     },
   })
 
-  const handleChange = async (password: string, email:string) => {
-    const { data, error } = await supabase.auth.updateUser({
-      email: email,
-      password: password
-    })    
-    if (error) {
-      toast.error("Coś poszło nie tak", {
-          description: "Spróbuj ponownie później",
-      })}
-    else {
-      toast.success("Dane zostały pomyślnie zaktualizowane")
+
+  async function onSubmit(values: z.infer<typeof LoginDataValidator>) {
+
+    
+    const body = {
+      email: values.email,
+      password: values.password,
+      session: session
     }
+    
+    
+    try {
+      const res = await fetch('/api/changelogindata', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }
+      );
+      
+      toast.success("Zmieniono dane Logowania")
+      update()
+    } 
+    catch (error) {
+      console.error(error);
+      toast.error("Wystąpił błąd. Spróbuj ponownie później")
+    }
+    
   }
+    
 
-
-  function onSubmit(values: z.infer<typeof LoginDataValidator>) {
-    handleChange(values.password, values.email)
-  }
 
   return (
     <Form {...form}>
@@ -99,7 +111,11 @@ export function ChangePassForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Wprowadź zmiany</Button>
+        <div className="flex justify-center">
+          <Button type="submit" >
+            Wprowadź zmiany
+            </Button>
+        </div>
       </form>
     </Form>
   )

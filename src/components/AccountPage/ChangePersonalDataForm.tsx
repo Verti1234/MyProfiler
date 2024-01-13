@@ -13,49 +13,49 @@ import {
   FormMessage,
 } from "../ui/form"
 import { Input } from "../ui/input"
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Database } from "@/lib/database.types"
 import { toast } from "sonner"
 import { PersonalDataValidator } from "@/lib/validators/PersonalData"
-
-
-
+import { useSession } from 'next-auth/react';
 
 
 export function ChangePersonalForm() {
 
-  const supabase = createClientComponentClient<Database>()
+  const { data: session, update} = useSession();
+
   
   const form = useForm<z.infer<typeof PersonalDataValidator>>({
     resolver: zodResolver(PersonalDataValidator),
     defaultValues: {
-      imie: "",
-      nazwisko: ""
+      imie: '',
+      nazwisko: ''
     },
   })
 
-  const handleUpdate = async (imie:string,nazwisko: string) => {
-        const {data: { session } } = await supabase.auth.getSession(); 
-      const { data, error } = await supabase
-      .from('Users')
-      .update({ firstname: imie, surname: nazwisko })
-      .eq('id', session?.user.id)
-
-      
-      if(error){
-        toast.error("Coś poszło nie tak", {
-          description: "Spróbuj ponownie później",
-      })
-      }else{
-        const { error } = await supabase.auth.refreshSession()
-        toast.success("Dane zostały pomyślnie zaktualizowane")
-      }
-    
-  }
-
   async function onSubmit(values: z.infer<typeof PersonalDataValidator>) {
     
-    handleUpdate(values.imie,values.nazwisko)
+    const body = {
+      imie: values.imie,
+      nazwisko: values.nazwisko,
+      session: session
+    }
+    try {
+      const response = await fetch('/api/changepersonaldata', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }
+      );
+
+      
+      toast.success("Zmieniono dane osobowe")
+      update()
+    } catch (error) {
+      console.error(error);
+      toast.error("Wystąpił błąd. Spróbuj ponownie później")
+    }
+
   }
   
   return (
@@ -68,7 +68,7 @@ export function ChangePersonalForm() {
             <FormItem className="h-24">
               <FormLabel>Imie</FormLabel>
               <FormControl>
-                <Input placeholder="Krzysiek" className="text-black" {...field} />
+                <Input placeholder="John" className="text-black" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -81,13 +81,16 @@ export function ChangePersonalForm() {
             <FormItem className="h-24">
               <FormLabel>Nazwisko</FormLabel>
               <FormControl>
-                <Input placeholder="Godyń"  className="text-black" {...field} />
+                <Input placeholder="Doe"  className="text-black" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-          <Button type="submit">Wprowadź zmiany</Button>
+        <div className="flex justify-center">
+          <Button type="submit" >Wprowadź zmiany</Button>
+        </div>
+          
         
         
       </form>
