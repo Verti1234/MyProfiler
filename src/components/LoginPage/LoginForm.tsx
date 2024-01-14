@@ -45,8 +45,11 @@ export function LoginForm() {
       })
       setLoading(false);
       
-      
+      if (res?.error) {
+        toast.error("Niepoprawne dane logowania")
+      } else {
       router.push("/account")
+      }
     }catch(error){
       toast.error("Niepoprawne dane logowania")
     }
