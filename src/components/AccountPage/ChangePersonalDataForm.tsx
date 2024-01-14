@@ -26,8 +26,10 @@ export function ChangePersonalForm() {
   const form = useForm<z.infer<typeof PersonalDataValidator>>({
     resolver: zodResolver(PersonalDataValidator),
     defaultValues: {
-      imie: '',
-      nazwisko: ''
+      //@ts-expect-error it exist
+      imie: session?.user?.firstName || '',
+      //@ts-expect-error 
+      nazwisko: session?.user?.SurName || ''
     },
   })
 

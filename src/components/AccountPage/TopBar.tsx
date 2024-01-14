@@ -16,7 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserRound } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { useSession,signOut } from "next-auth/react";
@@ -63,7 +62,7 @@ export default function TopBar() {
   return (
     <div className='w-full h-24 flex justify-center    '>
       <div className=' w-[95%] h-full flex justify-between items-center  border-b-[1px] p-4' >
-        <h1 className='text-3xl font-light flex justify-center items-center gap-2'><UserRound size={32}/>MyProfiler</h1>
+        <h1 className='text-3xl font-light flex justify-center items-center gap-2'>MyProfiler</h1>
         <Dialog>
         <DropdownMenu>
           <DropdownMenuTrigger>
@@ -91,14 +90,14 @@ export default function TopBar() {
             
           </DropdownMenuContent>
         </DropdownMenu>
-        <DialogContent >
-          <DialogHeader>
-            <DialogTitle className="pb-4">Aktualne dane</DialogTitle>
-            <DialogDescription>
-              <UserInfo user={user} />
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
+          <DialogContent >
+            <DialogHeader>
+              <DialogTitle className="pb-4">Aktualne dane</DialogTitle>
+              <DialogDescription>
+                <UserInfo user={user} />
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
       </Dialog>
       </div>  
     </div>

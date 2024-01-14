@@ -15,8 +15,8 @@ export default  function Page() {
   return (
     <div className='w-full h-screen'>
       <TopBar /> 
-      <div className='w-full  h-[calc(100%-6rem)] flex justify-center items-center'>
-        <Tabs defaultValue="account" className="w-3/6 h-5/6">
+      <div className='w-full  h-[calc(100%-6rem)] flex justify-center md:items-center'>
+        <Tabs defaultValue="account" className="md:w-3/6 md:h-5/6 p-4">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="account">Dane logowania</TabsTrigger>
             <TabsTrigger value="password"> Dane osobowe</TabsTrigger>

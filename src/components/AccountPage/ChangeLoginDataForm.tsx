@@ -25,7 +25,7 @@ export function ChangePassForm() {
   const form = useForm<z.infer<typeof LoginDataValidator>>({
     resolver: zodResolver(LoginDataValidator),
     defaultValues: {
-      email: "",
+      email: session?.user?.email || "",
       password: "", 
       confirmPassword: "",
     },

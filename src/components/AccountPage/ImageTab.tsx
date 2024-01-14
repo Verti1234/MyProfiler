@@ -12,7 +12,7 @@ export default function ImageTab() {
     <Card className="h-full w-full">
           <CardHeader>
             <CardTitle>Zmień zdjęcie profilowe</CardTitle>
-            <CardDescription>Kilknij aby zmienić awatara</CardDescription>
+            <CardDescription>Kilknij aby zmienić awatara po wybraniu zdjęcie zmieni się automatycznie</CardDescription>
           </CardHeader>
           <CardContent className='h-full w-full flex flex-col justify-start items-center gap-16 '>
 

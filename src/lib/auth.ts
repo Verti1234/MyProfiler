@@ -55,6 +55,8 @@ callbacks: {
       user:{
         ...session.user,
         id: token.id,
+        firstName: token.firstName,
+        SurName: token.SurName,
       }
     }
   },
@@ -65,9 +67,13 @@ callbacks: {
       return {
       ...token,
       id: u.id,
+      firstName: u.firstName,
+      SurName: u.SurName,
       user: {
         ...token,
         id: u.id,
+        firstName: u.firstName,
+        SurName: u.SurName,
       }
       }
     }
