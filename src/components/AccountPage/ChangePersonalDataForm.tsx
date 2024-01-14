@@ -16,20 +16,19 @@ import { Input } from "../ui/input"
 import { toast } from "sonner"
 import { PersonalDataValidator } from "@/lib/validators/PersonalData"
 import { useSession } from 'next-auth/react';
+import { Loader2 } from "lucide-react"
 
 
 export function ChangePersonalForm() {
 
   const { data: session, update} = useSession();
 
-  
+
   const form = useForm<z.infer<typeof PersonalDataValidator>>({
     resolver: zodResolver(PersonalDataValidator),
     defaultValues: {
-      //@ts-expect-error it exist
-      imie: session?.user?.firstName || '',
-      //@ts-expect-error 
-      nazwisko: session?.user?.SurName || ''
+      imie:'',
+      nazwisko:''
     },
   })
 
@@ -57,7 +56,7 @@ export function ChangePersonalForm() {
       console.error(error);
       toast.error("Wystąpił błąd. Spróbuj ponownie później")
     }
-
+  
   }
   
   return (
@@ -90,7 +89,14 @@ export function ChangePersonalForm() {
           )}
         />
         <div className="flex justify-center">
-          <Button type="submit" >Wprowadź zmiany</Button>
+          <Button type="submit" disabled={form.formState.isSubmitting} >
+            {
+              form.formState.isSubmitting && (
+                <Loader2 className="animate-spin h-5 w-5"/>
+              )
+            }
+            Wprowadź zmiany
+          </Button>
         </div>
           
         

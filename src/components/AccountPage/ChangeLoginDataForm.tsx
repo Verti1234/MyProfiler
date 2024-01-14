@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { LoginDataValidator } from "@/lib/validators/LoginData"
 import { useSession } from "next-auth/react"
+import { Loader2 } from "lucide-react"
 
 export function ChangePassForm() {
 
@@ -112,9 +113,14 @@ export function ChangePassForm() {
           )}
         />
         <div className="flex justify-center">
-          <Button type="submit" >
+          <Button type="submit" disabled={form.formState.isSubmitting} >
+            {
+              form.formState.isSubmitting && (
+                <Loader2 className="animate-spin h-5 w-5"/>
+              )
+            }
             Wprowadź zmiany
-            </Button>
+          </Button>
         </div>
       </form>
     </Form>

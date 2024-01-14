@@ -1,5 +1,3 @@
-
-import { hash } from 'bcrypt';
 import { LoginForm } from '../components/LoginPage/LoginForm'
 import Image from "next/image";
 

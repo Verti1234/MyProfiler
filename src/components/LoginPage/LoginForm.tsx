@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { SignInValidator } from "@/lib/validators/SignIn"
 import { signIn } from "next-auth/react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Loader2 } from "lucide-react"
 
 
@@ -25,6 +25,7 @@ export function LoginForm() {
 
   const router = useRouter()
   const [loading, setLoading]= useState(false)
+  
   const form = useForm<z.infer<typeof SignInValidator>>({
     resolver: zodResolver(SignInValidator),
     defaultValues: {
@@ -32,8 +33,6 @@ export function LoginForm() {
       password: ""
     },
   })
-
-
 
   async function onSubmit(values: z.infer<typeof SignInValidator>) {
     try{
