@@ -17,12 +17,14 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { SignInValidator } from "@/lib/validators/SignIn"
 import { signIn } from "next-auth/react"
+import { useEffect, useState } from "react"
+import { Loader2 } from "lucide-react"
 
 
 export function LoginForm() {
 
   const router = useRouter()
-
+  const [loading, setLoading]= useState(false)
   const form = useForm<z.infer<typeof SignInValidator>>({
     resolver: zodResolver(SignInValidator),
     defaultValues: {
@@ -34,16 +36,19 @@ export function LoginForm() {
 
 
   async function onSubmit(values: z.infer<typeof SignInValidator>) {
-    const res = await signIn("credentials", {
-      email: values.email,
-      password: values.password,
-      // callbackUrl: "/profile",
-      redirect: false,
-    })
-    if (res?.error) {
-      toast.error("Niepoprawne dane logowania")
-    } else {
+    try{
+      setLoading(true);
+      const res = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      })
+      setLoading(false);
+      
+      
       router.push("/account")
+    }catch(error){
+      toast.error("Niepoprawne dane logowania")
     }
   }
   
@@ -78,9 +83,12 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <div className="w-full flex justify-center">
-          <Button type="submit" >
-            Zaloguj się
+        <div className="w-full flex justify-center ">
+          <Button type="submit" className="flex gap-2" disabled={loading} >
+            {loading && (
+              <Loader2 className="animate-spin h-5 w-5"/>
+            )}
+            <span>Zaloguj się</span>
             </Button>
         </div>
         
