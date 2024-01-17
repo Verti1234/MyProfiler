@@ -19,7 +19,7 @@ export default  function Page() {
         <Tabs defaultValue="account" className="md:w-3/6 md:h-5/6 p-4 ">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="account">Dane logowania</TabsTrigger>
-            <TabsTrigger value="password"> Dane osobowe</TabsTrigger>
+            <TabsTrigger value="password">Dane osobowe</TabsTrigger>
             <TabsTrigger value="image">Zdjęcie profilowe</TabsTrigger>
           </TabsList>
           <TabsContent value="account" className="">
